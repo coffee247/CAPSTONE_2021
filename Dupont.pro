@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -16,13 +16,24 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    ballisticianmodel.cpp \
+    database.cpp \
+    grainmodel.cpp \
+    intlistdialog.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    powdermodel.cpp
 
 HEADERS += \
-    mainwindow.h
+    ballisticianmodel.h \
+    database.h \
+    grainmodel.h \
+    intlistdialog.h \
+    mainwindow.h \
+    powdermodel.h
 
 FORMS += \
+    intlistdialog.ui \
     mainwindow.ui
 
 TRANSLATIONS += \
@@ -32,3 +43,6 @@ TRANSLATIONS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    resource.qrc

@@ -12,3 +12,15 @@ IntListDialog::~IntListDialog()
 {
     delete ui;
 }
+
+
+
+void IntListDialog::on_buttonBox_accepted()
+{
+
+}
+
+void IntListDialog::on_buttonBox_rejected()
+{
+
+}

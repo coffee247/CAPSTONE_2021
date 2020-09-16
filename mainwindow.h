@@ -2,6 +2,13 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMessageBox>
+#include "grainmodel.h"
+#include "powdermodel.h"
+#include "database.h"
+#include "ballisticianmodel.h"
+#include <QDebug>
+#include <QSortFilterProxyModel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -13,9 +20,54 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = nullptr);
+
     ~MainWindow();
+
+private slots:
+    void on_AddGrainspushButton_clicked();
+
+    void on_removeGrainPushButton_clicked();
+
+    void on_testConnPushButton_clicked();
+
+    void on_quitApplicationButton_clicked();
+
+    void on_actionQuit_triggered();
+
+    void on_Home_button_clicked();
+
+    void on_Settings_button_clicked();
+
+    void on_History_button_clicked();
+
+    void on_Projects_button_clicked();
+
+    void on_Measure_button_clicked();
+
+    void on_GrainscomboBox_currentIndexChanged(int index);
+
+    void on_grainslistView_clicked(const QModelIndex &index);
+
+    void on_testcomboBox_currentIndexChanged(int index);
 
 private:
     Ui::MainWindow *ui;
+    grainModel * myGrainModel;
+    powderModel * myPowderModel;
+    ballisticianModel *myBallModel;
+    QSortFilterProxyModel *myBallProxyModel;
+    QSortFilterProxyModel * powderProxyModel;
+    database *mydb;
+    bool oddTry;
+
+    void initModels();
+
+    void disableAllButtons();
+    void enableAllButtons();
+
+    void displayMessage(QString message);
+
+    void showAddGrainDialog();
+    void addGrainsEntry(int entry);
 };
 #endif // MAINWINDOW_H

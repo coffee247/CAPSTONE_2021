@@ -1,2 +1,18 @@
-<!DOCTYPE RCC>
-<RCC version="1.0"/>
+<RCC>
+    <qresource prefix="/resources">
+        <file>images/WSDG.png</file>
+        <file>images/Compas.svg</file>
+        <file>images/delete.png</file>
+        <file>images/DuPont.svg</file>
+        <file>images/Gnome-go-home.svg</file>
+        <file>images/pencil.png</file>
+        <file>images/Brazilian_flag.png</file>
+        <file>images/Circle-icons-contacts.svg</file>
+        <file>images/Circle-icons-power.svg</file>
+        <file>images/Circle-icons-settings.svg</file>
+        <file>images/Flag-us.svg</file>
+        <file>images/Gear_green_icon.svg</file>
+        <file>images/L9 Slides.pdf</file>
+        <file>images/History.svg</file>
+    </qresource>
+</RCC>
