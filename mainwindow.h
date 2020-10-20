@@ -57,6 +57,8 @@ private:
     ballisticianModel *myBallModel;
     QSortFilterProxyModel *myBallProxyModel;
     QSortFilterProxyModel * powderProxyModel;
+    QSortFilterProxyModel * myGrainsProxyModel;
+
     database *mydb;
     bool oddTry;
 
@@ -69,5 +71,6 @@ private:
 
     void showAddGrainDialog();
     void addGrainsEntry(int entry);
+    void removeGrainsEntry(QModelIndex index);
 };
 #endif // MAINWINDOW_H

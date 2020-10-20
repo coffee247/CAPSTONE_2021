@@ -3,6 +3,7 @@
 
 #include <QSettings>
 #include <QSpinBox>
+#include <QString>
 #include <QAbstractItemView>
 #include <QModelIndex>
 #include "intlistdialog.h"
@@ -19,6 +20,9 @@ MainWindow::MainWindow(QWidget *parent)
     myGrainModel = new grainModel();
     myPowderModel = new powderModel();
     myBallModel = new ballisticianModel();
+
+    myGrainsProxyModel = new QSortFilterProxyModel;
+    myGrainsProxyModel->setSourceModel(myGrainModel);
 
     myBallProxyModel = new  QSortFilterProxyModel;
     myBallProxyModel->setSourceModel(myBallModel);
@@ -64,28 +68,29 @@ void MainWindow::on_testConnPushButton_clicked()
 void MainWindow::showAddGrainDialog()
 {
     IntListDialog aDialog;
-    QSpinBox *grainBox = aDialog.findChild<QSpinBox*>("addGrainsSpinBox");
-    if (aDialog.exec())
-        addGrainsEntry(grainBox->value());
+    QLineEdit *grainBox = aDialog.findChild<QLineEdit*>("addGrainsLineEdit");
+    if (aDialog.exec())// On Accept (OK Button pressed) ...
+    {
+        QString stringVal = grainBox->text();
+        addGrainsEntry(stringVal.toInt());
+    }
 }
 
 void MainWindow::addGrainsEntry(int entry)
 {
     if (!this->myGrainModel->exists(entry))
     {
-        int rowIndex = this->myGrainModel->sortedIndex(entry)-1;
-        if (this->myGrainModel->insertRows(rowIndex, 1, QModelIndex()))
+        this->myGrainModel->insertRows(0,1,QModelIndex());  // insert a blank row to put new data in
+        QModelIndex index = this->myGrainModel->index(0,0,QModelIndex());  // get a reference to the index of the blank row
+        if (this->myGrainModel->setData(index,entry, Qt::EditRole))  // attempt to insert data into the row
         {
-            QModelIndex index = this->myGrainModel->index(rowIndex, 0, QModelIndex());
-            if (this->myGrainModel->setData(index, entry, Qt::EditRole))
-            {
-                QString message =  QString::number(entry) + " grains was added.";
-                displayMessage(message);
-            }
-            else
-            {
-                displayMessage("Sorry, but something went worng in addGrains");
-            }
+            myGrainsProxyModel->sort(0); // sort the proxymodel (Updates view with sorted result)
+            QString message =  QString::number(entry) + " grains was added.";
+            displayMessage(message);
+        }
+        else
+        {
+            displayMessage("Sorry, but something went wrong in addGrains");
         }
     }
     else
@@ -93,6 +98,14 @@ void MainWindow::addGrainsEntry(int entry)
         displayMessage("Sorry, but that is a duplicate value!");
     }
 }
+
+void MainWindow::removeGrainsEntry(QModelIndex index)
+{
+    QVariant qv = this->myGrainModel->data(index, Qt::EditRole);
+    this->myGrainModel->removeRows(ui->grainslistView->currentIndex().row(),1,index);
+}
+
+
 
 
 void MainWindow::displayMessage(QString message)
@@ -116,10 +129,7 @@ void MainWindow::on_AddGrainspushButton_clicked()
 
 void MainWindow::on_removeGrainPushButton_clicked()
 {
-    QModelIndex index = ui->grainslistView->currentIndex();
-    int row = index.row();
-    if (row == -1) displayMessage("Please select a grainWeight first!");
-    else qDebug() << "Row " << row+1 << " pressed!";
+    this->removeGrainsEntry(ui->grainslistView->currentIndex());
 }
 
 void MainWindow::on_quitApplicationButton_clicked()
@@ -189,7 +199,7 @@ void MainWindow::on_GrainscomboBox_currentIndexChanged(int myindex)
 {
     QModelIndex tempIndex = myGrainModel->index(myindex, 0);
     ui->grainslistView->setCurrentIndex(tempIndex);
-    ui->testcomboBox->setCurrentIndex(tempIndex.row());
+    ui->grainsComboBox->setCurrentIndex(tempIndex.row());
 }
 
 
@@ -202,9 +212,8 @@ void MainWindow::initModels()
     myBallModel->populate();
 
     // Tie Views to Models
-    ui->grainslistView->setModel(myGrainModel);
-    ui->GrainscomboBox->setModel(myGrainModel);
-    ui->testcomboBox->setModel(myGrainModel);
+    ui->grainslistView->setModel(myGrainsProxyModel);
+    ui->grainsComboBox->setModel(myGrainsProxyModel);
     ui->ballisticianTableView->setModel(myBallProxyModel);
     ui->powdersTableView->setModel(myPowderModel);
 
@@ -224,8 +233,7 @@ void MainWindow::initModels()
 
 void MainWindow::on_grainslistView_clicked(const QModelIndex &index)
 {
-    ui->GrainscomboBox->setCurrentIndex(index.row());
-    ui->testcomboBox->setCurrentIndex(index.row());
+    ui->grainsComboBox->setCurrentIndex(index.row());
 
 }
 
@@ -233,5 +241,4 @@ void MainWindow::on_testcomboBox_currentIndexChanged(int myindex)
 {
     QModelIndex tempIndex = myGrainModel->index(myindex, 0);
     ui->grainslistView->setCurrentIndex(tempIndex);
-    ui->GrainscomboBox->setCurrentIndex(myindex);
 }

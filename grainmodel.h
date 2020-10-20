@@ -6,6 +6,7 @@
 #include <QVector>
 #include <QAbstractListModel>
 #include <QDebug>
+#include "commonutils.h"
 
 
 
@@ -44,6 +45,7 @@ signals:
 
 private:
     QVector<int> grainsList;  // A vector of ints ... these are our individual grainWeights
+    CommonUtils *commonUtils;
 };
 
 #endif // GRAINMODEL_H

@@ -6,6 +6,7 @@ grainModel::grainModel(QObject *parent) : QAbstractListModel(parent)
 {
 }
 
+
 /* When subclassing QAbstractListModel, you must provide
  * implementations of the rowCount() and data() functions.
  * Well behaved models also provide a headerData() implementation.
@@ -51,6 +52,7 @@ Qt::ItemFlags grainModel::flags(const QModelIndex &index) const
     return QAbstractListModel::flags(index) | Qt::ItemIsEditable;
 }
 
+
 bool grainModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     QVariant intVal = value;
@@ -59,18 +61,17 @@ bool grainModel::setData(const QModelIndex &index, const QVariant &value, int ro
     QString theQuery = "insert into grains(grainWeight) values (" + val + ");";
     query.prepare(theQuery);
     if (query.exec()){
-    if (index.isValid() && role == Qt::EditRole) {
-        const int row = index.row();
-        grainsList.replace(row, intVal.toInt());
-        this->sort(0);
-        emit dataChanged(index, index, {Qt::DisplayRole, Qt::EditRole});
-        return true;
+        if (index.isValid() && role == Qt::EditRole) {
+            const int row = index.row();
+            grainsList.replace(row, intVal.toInt());
+            this->sort(0);
+            emit dataChanged(index, index, {Qt::DisplayRole, Qt::EditRole});
+            return true;
+        }
     }
-
-    }
-
     return false;
 }
+
 
 /*
  * Wen implementing insertRows it is important to make sure views are made aware of changes.
@@ -88,6 +89,7 @@ bool grainModel::insertRows(int position, int countOfRowsToInsert = 1, const QMo
     return true;
 }
 
+
 /*
  * removes count rows starting with the given row under parent parent from the model.
 */
@@ -95,18 +97,33 @@ bool grainModel::removeRows(int position, int rows, const QModelIndex &index)
 {
     Q_UNUSED(index);
     beginRemoveRows(QModelIndex(), position, position + rows - 1);
-
-    for (int row = 0; row < rows; ++row)
-        this->grainsList.removeAt(position);
-
+    QSqlQuery query;
+    int row = position;
+    while (row <= (position + rows) -1)
+    {
+        QVariant val = this->grainsList.at(position);
+        QString StringVal = val.toString();
+        QString theQuery = "delete from grains where grainWeight = " + StringVal + ";";
+        query.prepare(theQuery);
+        if (query.exec()){
+            this->grainsList.removeAt(position);
+        }
+        else
+        {
+            commonUtils->displayMessage("Cannot delete that value");
+        }
+        row ++;
+    }
     endRemoveRows();
     return true;
 }
+
 
 const QVector<int> &grainModel::getGrainsList() const
 {
     return this->grainsList;
 }
+
 
 /* Method to query the database at launch (to do initial populate of ListView */
 void grainModel::populate()
@@ -146,5 +163,8 @@ bool grainModel::exists(int testVal)
     if (query.size() >= 1) return true;
     return false;
 }
+
+
+
 
 

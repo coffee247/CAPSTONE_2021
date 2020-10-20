@@ -17,6 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     ballisticianmodel.cpp \
+    commonutils.cpp \
     database.cpp \
     grainmodel.cpp \
     intlistdialog.cpp \
@@ -26,6 +27,7 @@ SOURCES += \
 
 HEADERS += \
     ballisticianmodel.h \
+    commonutils.h \
     database.h \
     grainmodel.h \
     intlistdialog.h \
