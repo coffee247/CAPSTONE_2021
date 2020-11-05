@@ -6,6 +6,7 @@
 #include <QString>
 #include <QAbstractItemView>
 #include <QModelIndex>
+#include <QScreen>
 #include "intlistdialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -13,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    this->scaleMainWindow(0.5);
     disableAllButtons();
     ui->stackedWidget->setCurrentIndex(0);
 
@@ -26,8 +28,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     myBallProxyModel = new  QSortFilterProxyModel;
     myBallProxyModel->setSourceModel(myBallModel);
-
-
 
     mydb = new database();
 
@@ -96,13 +96,13 @@ void MainWindow::addGrainsEntry(int entry)
     else
     {
         displayMessage("Sorry, but that is a duplicate value!");
-    }
+}
 }
 
 void MainWindow::removeGrainsEntry(QModelIndex index)
 {
-    QVariant qv = this->myGrainModel->data(index, Qt::EditRole);
-    this->myGrainModel->removeRows(ui->grainslistView->currentIndex().row(),1,index);
+    QModelIndex position = myGrainsProxyModel->mapToSource(index);
+    this->myGrainModel->removeRows(position.row(), 1, position);
 }
 
 
@@ -174,6 +174,8 @@ void MainWindow::on_Settings_button_clicked()
     ui->stackedWidget->setCurrentIndex(2);
 }
 
+
+
 void MainWindow::on_History_button_clicked()
 {
     enableAllButtons();
@@ -195,13 +197,6 @@ void MainWindow::on_Measure_button_clicked()
     ui->stackedWidget->setCurrentIndex(5);
 }
 
-void MainWindow::on_GrainscomboBox_currentIndexChanged(int myindex)
-{
-    QModelIndex tempIndex = myGrainModel->index(myindex, 0);
-    ui->grainslistView->setCurrentIndex(tempIndex);
-    ui->grainsComboBox->setCurrentIndex(tempIndex.row());
-}
-
 
 // Set up models
 void MainWindow::initModels()
@@ -217,6 +212,9 @@ void MainWindow::initModels()
     ui->ballisticianTableView->setModel(myBallProxyModel);
     ui->powdersTableView->setModel(myPowderModel);
 
+    ui->grainsComboBox->setModel(myGrainsProxyModel);
+    ui->GWcomboBox->setModel(myGrainsProxyModel);
+
     // Fix Headers
     ui->powdersTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->powdersTableView->setAlternatingRowColors(true);
@@ -231,14 +229,39 @@ void MainWindow::initModels()
     ui->ballisticianTableView->setSelectionBehavior(QTableView::SelectRows);
 }
 
+void MainWindow::scaleMainWindow(double percentage)
+{
+    QScreen *screen = QGuiApplication::primaryScreen();
+    QRect  screenGeometry = screen->geometry();
+    int height = screenGeometry.height();
+    int width = screenGeometry.width();
+    int x = (width - (width*percentage))/2;
+    int y = (height - (height*percentage))/2;
+    this->setGeometry(x, y, width*percentage, height*percentage);
+}
+
 void MainWindow::on_grainslistView_clicked(const QModelIndex &index)
 {
     ui->grainsComboBox->setCurrentIndex(index.row());
-
+    ui->GWcomboBox->setCurrentIndex(index.row());
 }
 
-void MainWindow::on_testcomboBox_currentIndexChanged(int myindex)
+void MainWindow::on_grainsComboBox_currentIndexChanged(int index)
 {
-    QModelIndex tempIndex = myGrainModel->index(myindex, 0);
-    ui->grainslistView->setCurrentIndex(tempIndex);
+    this->ScrollGrainsIntoView(index);
 }
+
+void MainWindow::on_GWcomboBox_currentIndexChanged(int index)
+{
+    this->ScrollGrainsIntoView(index);
+}
+
+void MainWindow::ScrollGrainsIntoView(int index)
+{
+    QModelIndex tempIndex = myGrainsProxyModel->index(index, 0);
+    ui->grainslistView->setCurrentIndex(tempIndex);
+    ui->grainslistView->scrollTo(tempIndex, QAbstractItemView::PositionAtCenter);
+    this->on_grainslistView_clicked(tempIndex);
+}
+
+

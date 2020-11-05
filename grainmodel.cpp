@@ -44,6 +44,22 @@ QVariant grainModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
+QVariant grainModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if (role != Qt::DisplayRole)
+            return QVariant();
+
+        if (orientation == Qt::Horizontal) {
+            switch (section) {
+            case 0:
+                return tr("Grain Weight");
+            default:
+                return QVariant();
+            }
+        }
+        return section + 1;
+}
+
 
 Qt::ItemFlags grainModel::flags(const QModelIndex &index) const
 {
@@ -138,20 +154,6 @@ void grainModel::populate()
     this->grainsList = memberList;
 }
 
-int grainModel::sortedIndex(int testVal)
-{
-    QVectorIterator<int> i(this->grainsList);
-    int rowIndex = 0;
-    while (i.hasNext())
-    {
-        int lVal = i.next();
-        if (lVal < testVal){
-            rowIndex ++;
-        }
-        else return rowIndex + 1;
-    }
-    return rowIndex +1;
-}
 
 
 bool grainModel::exists(int testVal)

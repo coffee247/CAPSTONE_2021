@@ -8,6 +8,7 @@
 #include "database.h"
 #include "ballisticianmodel.h"
 #include <QDebug>
+#include <QPoint>
 #include <QSortFilterProxyModel>
 
 QT_BEGIN_NAMESPACE
@@ -44,11 +45,13 @@ private slots:
 
     void on_Measure_button_clicked();
 
-    void on_GrainscomboBox_currentIndexChanged(int index);
+//    void on_GrainscomboBox_currentIndexChanged(int index);
 
     void on_grainslistView_clicked(const QModelIndex &index);
 
-    void on_testcomboBox_currentIndexChanged(int index);
+    void on_GWcomboBox_currentIndexChanged(int index);
+
+    void on_grainsComboBox_currentIndexChanged(int index);
 
 private:
     Ui::MainWindow *ui;
@@ -64,6 +67,8 @@ private:
 
     void initModels();
 
+    void scaleMainWindow(double percentage);
+
     void disableAllButtons();
     void enableAllButtons();
 
@@ -72,5 +77,7 @@ private:
     void showAddGrainDialog();
     void addGrainsEntry(int entry);
     void removeGrainsEntry(QModelIndex index);
+    void ScrollGrainsIntoView(int index);
+    void on_grainscomboBox_currentIndexChanged(int index);
 };
 #endif // MAINWINDOW_H
